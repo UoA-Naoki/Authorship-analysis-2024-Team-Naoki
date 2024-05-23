@@ -122,6 +122,9 @@ class Actions:
             return
         cur.execute('DELETE FROM files WHERE id=?',(row[0],))
         conn.commit()
+        original=input("Do you want to delete original file too? [y or n]> ")
+        if original=="y":
+            os.remove(row[1])
 
     def help(self):
         print("create")
