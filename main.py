@@ -90,6 +90,8 @@ class Actions:
             cur.execute('UPDATE files SET id=? WHERE id=?',(id,row[0]))
         elif type=="name":
             name=input("New name?> ")
+            if os.path.exists(name):
+                name=os.path.relpath(name)
             findRow=actions.find(name)
             if findRow!=0:
                 print(name+" is already exists")
