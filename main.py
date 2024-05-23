@@ -1,4 +1,5 @@
 import sqlite3
+import os
 
 class File:
     def __init__(self,name):
@@ -39,18 +40,19 @@ class Actions:
     def create(self):
         actions=Actions()
         name=input("Name?> ")
+        name=os.path.relpath(name)
         row=actions.find(name)
         if row!=0:
             print(name+" is already exists")
+            return
+        file=File(name)
+        text=file.read()
+        if text==0:
             return
         id=input("id?> ")
         row=actions.find(id)
         if row!=0:
             print(id+" is already exists")
-            return
-        file=File(name)
-        text=file.read()
-        if text==0:
             return
         cur.execute("insert into files(id,name,text) values(?,?,?);",(id,name,text))
         conn.commit()
@@ -58,6 +60,8 @@ class Actions:
     def retrieve(self):
         actions=Actions()
         file=input("Which or all?> ")
+        if os.path.exists(file):
+            file=os.path.relpath(file)
         if file=="all":
             actions.find("all")
         else:
@@ -70,6 +74,8 @@ class Actions:
     def update(self):
         find=input("Which?> ")
         actions=Actions()
+        if os.path.exists(find):
+            find=os.path.relpath(find)
         row=actions.find(find)
         if row==0:
             print("Not found")
@@ -77,15 +83,15 @@ class Actions:
         type=input("Type?> ")
         if type=="id":
             id=input("New id?> ")
-            row=actions.find(id)
-            if row!=0:
+            findRow=actions.find(id)
+            if findRow!=0:
                 print(id+" is already exists")
                 return
             cur.execute('UPDATE files SET id=? WHERE id=?',(id,row[0]))
         elif type=="name":
             name=input("New name?> ")
-            row=actions.find(name)
-            if row!=0:
+            findRow=actions.find(name)
+            if findRow!=0:
                 print(name+" is already exists")
                 return
             cur.execute('UPDATE files SET name=? WHERE id=?',(name,row[0]))
@@ -106,6 +112,8 @@ class Actions:
     def delete(self):
         find=input("Which?> ")
         actions=Actions()
+        if os.path.exists(find):
+            find=os.path.relpath(find)
         row=actions.find(find)
         if row==0:
             print("Not found")
