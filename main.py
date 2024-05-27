@@ -1,169 +1,37 @@
-import sqlite3
-import os
+from functions import db
+from functions import action
 
-class File:
-    def __init__(self,name):
-        self.name=name
-
-    def read(self):
-        try:
-            f=open(self.name,'r')
-        except OSError:
-            print("No such file or directory.")
-            return 0
-        else:
-            text=f.read()
-            f.close()
-            return text
-
-class Actions:
-    def show(self,row):
-        print("id: "+row[0])
-        print("name: "+row[1])
-        print()
-        print(row[2])
-    
-    def find(self, find):
-        actions=Actions()
-        cur.execute('SELECT * FROM files')
-        for row in cur:
-            if find=="all":
-                print("----------")
-                actions.show(row)
-                print()
-            else:
-                for i in row:
-                    if i==find:
-                        return row
-        return 0
-    
-    def create(self):
-        actions=Actions()
-        name=input("Name?> ")
-        name=os.path.relpath(name)
-        row=actions.find(name)
-        if row!=0:
-            print(name+" is already exists")
-            return
-        file=File(name)
-        text=file.read()
-        if text==0:
-            return
-        id=input("id?> ")
-        row=actions.find(id)
-        if row!=0:
-            print(id+" is already exists")
-            return
-        cur.execute("insert into files(id,name,text) values(?,?,?);",(id,name,text))
-        conn.commit()
-
-    def retrieve(self):
-        actions=Actions()
-        file=input("Which or all?> ")
-        if os.path.exists(file):
-            file=os.path.relpath(file)
-        if file=="all":
-            actions.find("all")
-        else:
-            row=actions.find(file)
-            if row==0:
-                print("Not found")
-                return
-            actions.show(row)
-
-    def update(self):
-        find=input("Which?> ")
-        actions=Actions()
-        if os.path.exists(find):
-            find=os.path.relpath(find)
-        row=actions.find(find)
-        if row==0:
-            print("Not found")
-            return
-        type=input("Type?> ")
-        if type=="id":
-            id=input("New id?> ")
-            findRow=actions.find(id)
-            if findRow!=0:
-                print(id+" is already exists")
-                return
-            cur.execute('UPDATE files SET id=? WHERE id=?',(id,row[0]))
-        elif type=="name":
-            name=input("New name?> ")
-            if os.path.exists(name):
-                name=os.path.relpath(name)
-            findRow=actions.find(name)
-            if findRow!=0:
-                print(name+" is already exists")
-                return
-            cur.execute('UPDATE files SET name=? WHERE id=?',(name,row[0]))
-        elif type=="text":
-            text=input("New text?> ")
-            cur.execute('UPDATE files SET text=? WHERE id=?',(text,row[0]))
-        elif type=="help":
-            print("id")
-            print("name")
-            print("text")
-            print("help")
-            return
-        else:
-            print("No such type. Input help for type list.")
-            return
-        conn.commit()
-
-    def delete(self):
-        find=input("Which?> ")
-        actions=Actions()
-        if os.path.exists(find):
-            find=os.path.relpath(find)
-        row=actions.find(find)
-        if row==0:
-            print("Not found")
-            return
-        cur.execute('DELETE FROM files WHERE id=?',(row[0],))
-        conn.commit()
-        original=input("Do you want to delete original file too? [y or n]> ")
-        if original=="y":
-            os.remove(row[1])
-
-    def help(self):
-        print("create")
-        print("retrieve")
-        print("update")
-        print("delete")
-        print("quit")
-        print("help")
-
-dbname="files.db"
-conn=sqlite3.connect(dbname)
-cur=conn.cursor()
-cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
-tables=cur.fetchall()
-exist=False
-for table in tables:
-    if table[0]=="files":
-        exist=True
-        break
-if not exist:
-    cur.execute('create table files(id STRING,name STRING,text STRING)')
-actions=Actions()
-
+db.init()
 while True:
-    action=input("Action?> ")
-    if action=="create":
-        actions.create()
-    elif action=="retrieve":
-        actions.retrieve()
-    elif action=="update":
-        actions.update()
-    elif action=="delete":
-        actions.delete()
-    elif action=="quit":
+    command=input("Action?> ")
+    item=command.split()
+    num=len(item)
+    if item[0]=="create":
+        if num==3:
+            action.create(item[1],item[2])
+        else:
+            print("No such action. Input help for command list.")
+    elif item[0]=="retrieve":
+        if num==1:
+            action.showall()
+        elif num==3:
+            action.retrieve(item[1],item[2])
+        else:
+            print("No such action. Input help for command list.")
+    elif item[0]=="update":
+        if num==4:
+            action.update(item[1],item[2],item[3])
+        else:
+            print("No such action. Input help for command list.")
+    elif item[0]=="delete":
+        if num==3:
+            action.delete(item[1],item[2])
+        else:
+            print("No such action. Input help for command list.")
+    elif item[0]=="quit":
         break
-    elif action=="help":
-        actions.help()
+    elif item[0]=="help":
+        action.help()
     else:
         print("No such action. Input help for command list.")
-
-cur.close()
-conn.close()
+db.close()
