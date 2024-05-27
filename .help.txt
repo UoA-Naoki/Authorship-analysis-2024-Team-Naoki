@@ -1,0 +1,18 @@
+
+----------------------------------------------------------------------
+Options                     -i -p
+Variables                   [id] [file] [id1] [id2]
+[id] [id1] [id2]            Put id such as Q1, Q2, K1, K2, R1, R2...
+[file]                      Put file name or path.
+----------------------------------------------------------------------
+
+create [id] [file]          Create [file] in DB with name [id].
+retrieve                    Show all id and file.
+retrieve -i [id]            Read text which named [id].
+retrieve -p [file]          Read text in [file].
+update -i [id1] [id2]       Update [id1] with [id2].
+update -p [file] [id]       Update id of [file] with [id].
+delete -i [id]              Delete file named [id].
+delete -p [file]            Delete [file].
+quit                        Quit.
+help                        Show help.
