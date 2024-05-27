@@ -13,11 +13,11 @@ def close():
     return
 
 def all():
-    cur.execute('SELECT * FROM files')
+    cur.execute('SELECT * FROM files ORDER BY id ASC')
     return cur
 
 def create(id,path):
-    cur.execute("insert into files(id,path) values(?,?);",(str(id),str(path)))
+    cur.execute('insert into files(id,path) values(?,?);',(str(id),str(path)))
     conn.commit()
     return
 
