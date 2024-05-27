@@ -4,7 +4,7 @@ from functions import action
 db.init()
 while True:
     command=input("Action?> ")
-    item=command.split()
+    item=command.lower().split()
     num=len(item)
     if item[0]=="create":
         if num==3:

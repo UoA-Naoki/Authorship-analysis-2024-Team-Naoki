@@ -13,6 +13,7 @@ def find(find):
 
 def findpath(option,item):
     if option=="-i":
+        item=item.upper()
         path=find(item)
     elif option=="-p":
         path=find(Path(item).resolve())
@@ -24,6 +25,7 @@ def findpath(option,item):
     return path,None
 
 def create(id,path):
+    id=id.upper()
     rowid=find(id)
     abspath=Path(path).resolve()
     rowpath=find(abspath)
@@ -72,6 +74,7 @@ def update(option,item,id):
         return
     elif e==1:
         return
+    id=id.upper()
     row=find(id)
     if path==row:
         print("Nothing changed.")
