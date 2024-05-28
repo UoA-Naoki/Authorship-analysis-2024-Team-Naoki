@@ -1,3 +1,7 @@
+from src import db
+import os
+from pathlib import Path
+
 def read(path):
     try:
         f=open(path,'r')
@@ -8,3 +12,11 @@ def read(path):
         text=f.read()
         f.close()
         return text
+
+def existancecheck():
+    cur=db.all()
+    for item in cur:
+        if not os.path.exists(item[1]):
+            db.delete(item[1])
+            print(str(Path(item[1]).relative_to(Path.cwd()))+" is deleted.")
+    return

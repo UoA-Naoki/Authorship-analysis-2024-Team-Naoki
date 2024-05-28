@@ -1,12 +1,14 @@
 from src import system
 from src import action
+from src import file
 
 system.init()
 while True:
+    print()
     command=input("Action?> ")
+    file.existancecheck()
     if system.casesensitive:
         item=command.split()
-        print("!")
     else:
         item=command.lower().split()
     num=len(item)
