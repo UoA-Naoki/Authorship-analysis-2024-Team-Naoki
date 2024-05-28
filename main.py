@@ -1,10 +1,14 @@
-from functions import db
-from functions import action
+from src import system
+from src import action
 
-db.init()
+system.init()
 while True:
     command=input("Action?> ")
-    item=command.lower().split()
+    if system.casesensitive:
+        item=command.split()
+        print("!")
+    else:
+        item=command.lower().split()
     num=len(item)
     if item[0]=="create":
         if num==3:
@@ -34,4 +38,4 @@ while True:
         action.help()
     else:
         print("No such action. Input help for command list.")
-db.close()
+system.close()
