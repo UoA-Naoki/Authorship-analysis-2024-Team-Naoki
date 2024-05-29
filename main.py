@@ -5,7 +5,10 @@ from src import file
 system.init()
 while True:
     print()
-    command=input("Action?> ")
+    try:
+        command=input("Action?> ")
+    except EOFError:
+        system.close()
     file.existancecheck()
     if system.casesensitive:
         item=command.split()
