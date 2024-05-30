@@ -118,5 +118,10 @@ def delete(option,item):
     db.delete(path)
     return
 
+def massdelete(option,items):
+    for item in items:
+        delete(option,item)
+    return
+
 def help():
     print(file.read(".help.txt"))

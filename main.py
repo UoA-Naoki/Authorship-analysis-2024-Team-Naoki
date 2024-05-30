@@ -11,40 +11,45 @@ while True:
         system.close()
     file.existancecheck()
     if system.casesensitive:
-        item=command.split()
+        things=command.split()
     else:
-        item=command.lower().split()
-    num=len(item)
-    if item[0]=="create":
+        things=command.lower().split()
+    num=len(things)
+    if things[0]=="create":
         if num==3:
-            action.create(item[1],item[2])
+            action.create(things[1],things[2])
         elif num>3:
             paths=[]
-            for path in item[2:]:
+            for path in things[2:]:
                 paths.append(path)
-            action.masscreate(item[1],paths)
+            action.masscreate(things[1],paths)
         else:
             print("No such action. Input help for command list.")
-    elif item[0]=="retrieve":
+    elif things[0]=="retrieve":
         if num==1:
             action.showall()
         elif num==3:
-            action.retrieve(item[1],item[2])
+            action.retrieve(things[1],things[2])
         else:
             print("No such action. Input help for command list.")
-    elif item[0]=="update":
+    elif things[0]=="update":
         if num==4:
-            action.update(item[1],item[2],item[3])
+            action.update(things[1],things[2],things[3])
         else:
             print("No such action. Input help for command list.")
-    elif item[0]=="delete":
+    elif things[0]=="delete":
         if num==3:
-            action.delete(item[1],item[2])
+            action.delete(things[1],things[2])
+        elif num>3:
+            items=[]
+            for item in things[2:]:
+                items.append(item)
+            action.massdelete(things[1],items)
         else:
             print("No such action. Input help for command list.")
-    elif item[0]=="quit":
+    elif things[0]=="quit":
         break
-    elif item[0]=="help":
+    elif things[0]=="help":
         action.help()
     else:
         print("No such action. Input help for command list.")
