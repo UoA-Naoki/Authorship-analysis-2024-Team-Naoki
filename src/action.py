@@ -1,5 +1,6 @@
 from src import db
 from src import file
+from src import system
 from pathlib import Path
 import os
 
@@ -33,7 +34,11 @@ def findpath(option,item):
 
 def overwrite(id,path):
     while True:
-        overwrite=input(id+" is already exists. Do you want to overwrite? [y or n]> ")
+        try:
+            overwrite=input(id+" is already exists. Do you want to overwrite? [y or n]> ")
+        except EOFError:
+            print("Action canceled.")
+            system.close()
         if overwrite=="y" or overwrite=="Y":
             db.delete(path)
             break
