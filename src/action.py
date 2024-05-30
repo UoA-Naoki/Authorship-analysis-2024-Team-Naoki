@@ -8,7 +8,11 @@ def abspath(path):
     return str(Path(path).resolve())
 
 def relpath(path):
-    return str(Path(path).relative_to(Path.cwd()))
+    try:
+        path=str(Path(path).relative_to(Path.cwd()))
+    except ValueError:
+        path=str(Path(path))
+    return path
 
 def find(find):
     cur=db.all()
@@ -48,11 +52,10 @@ def overwrite(id,path):
             system.close()
         if overwrite=="y" or overwrite=="Y":
             db.delete(path)
-            break
+            return
         elif overwrite=="n" or overwrite=="N":
             print("Action canceled.")
             return
-    return
 
 def create(id,path):
     id=str(id).upper()

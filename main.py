@@ -19,10 +19,10 @@ while True:
         if num==3:
             action.create(things[1],things[2])
         elif num>3:
-            paths=[]
-            for path in things[2:]:
-                paths.append(path)
-            action.masscreate(things[1],paths)
+            items=[]
+            for item in things[2:]:
+                items.append(item)
+            action.masscreate(things[1],items)
         else:
             print("No such action. Input help for command list.")
     elif things[0]=="retrieve":
