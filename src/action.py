@@ -20,7 +20,7 @@ def find(find):
 
 def findpath(option,item):
     if option=="-i":
-        item=item.upper()
+        item=str(item).upper()
         path=find(item)
     elif option=="-p":
         path=find(abspath(item))
@@ -31,6 +31,13 @@ def findpath(option,item):
         print("Not Found: "+item)
         return None
     return path
+
+def findid(id):
+    cur=db.all()
+    for row in cur:
+        if str(id)==str(row[0]):
+            return True
+    return False
 
 def overwrite(id,path):
     while True:
@@ -48,7 +55,7 @@ def overwrite(id,path):
     return
 
 def create(id,path):
-    id=id.upper()
+    id=str(id).upper()
     rowid=find(id)
     path=abspath(path)
     rowpath=find(path)
@@ -61,9 +68,20 @@ def create(id,path):
     if rowid!=None:
         overwrite(id,rowid)
     if not os.path.exists(path):
-        print("File not found.")
+        print("File not found: "+relpath(path))
         return
     db.create(id,path)
+    return
+
+def masscreate(idtype,paths):
+    idtype=str(idtype).upper()
+    idnum=1
+    id=idtype+str(idnum)
+    for path in paths:
+        while findid(id):
+            idnum+=1
+            id=idtype+str(idnum)
+        create(id,path)
     return
 
 def showall():
@@ -83,7 +101,7 @@ def update(option,item,id):
     path=findpath(option,item)
     if path==None:
         return
-    id=id.upper()
+    id=str(id).upper()
     row=find(id)
     if path==row:
         print("Nothing changed.")
