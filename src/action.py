@@ -22,7 +22,7 @@ def find(find):
                 return row[1]
     return None
 
-def findpath(option,item):
+def findpath(option,item,v=True):
     if option=="-i":
         item=str(item).upper()
         path=find(item)
@@ -30,8 +30,8 @@ def findpath(option,item):
         path=find(abspath(item))
     else:
         print("No such action. Input help for command list.")
-        return None
-    if path==None:
+        return 0
+    if path==None and v:
         print("Not Found: "+item)
         return None
     return path
@@ -57,34 +57,27 @@ def overwrite(id,path):
             print("Action canceled.")
             return
 
-def create(id,path):
-    id=str(id).upper()
-    rowid=find(id)
-    path=abspath(path)
-    rowpath=find(path)
-    if rowid!=None and rowpath!=None and rowid==rowpath:
-        print("Already exist id: "+id+", and path: "+relpath(path))
-        return
-    if rowpath!=None:
+def creatable(item):
+    path=findpath("-p",item,False)
+    if path!=None:
         print(relpath(path)+" is already exists.")
-        return
-    if rowid!=None:
-        overwrite(id,rowid)
-    if not os.path.exists(path):
-        print("File not found: "+relpath(path))
-        return
-    db.create(id,path)
-    return
+        return None
+    if not os.path.exists(item):
+        print("Not found: "+relpath(item))
+        return None
+    return abspath(item)
 
-def masscreate(idtype,paths):
+def create(idtype,items):
     idtype=str(idtype).upper()
     idnum=1
     id=idtype+str(idnum)
-    for path in paths:
+    for item in items:
         while findid(id):
             idnum+=1
             id=idtype+str(idnum)
-        create(id,path)
+        path=creatable(item)
+        if path!=None:
+            db.create(id,path)
     return
 
 def showall():
@@ -95,14 +88,14 @@ def showall():
 
 def retrieve(option,item):
     path=findpath(option,item)
-    if path==None:
+    if path==None or path==0:
         return
     print(file.read(path))
     return
 
 def update(option,item,id):
     path=findpath(option,item)
-    if path==None:
+    if path==None or path==0:
         return
     id=str(id).upper()
     row=find(id)
@@ -114,16 +107,12 @@ def update(option,item,id):
     db.update(id,path)
     return
 
-def delete(option,item):
-    path=findpath(option,item)
-    if path==None:
-        return
-    db.delete(path)
-    return
-
-def massdelete(option,items):
+def delete(option,items):
     for item in items:
-        delete(option,item)
+        path=findpath(option,item)
+        if path==None or path==0:
+            continue
+        db.delete(path)
     return
 
 def help():
