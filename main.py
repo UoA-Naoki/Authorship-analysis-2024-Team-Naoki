@@ -12,10 +12,26 @@ while True:
         system.close()
     file.existancecheck()
     if system.casesensitive:
-        things=command.split()
+        commands=command.split()
     else:
-        things=command.lower().split()
+        commands=command.lower().split()
+    things=[]
+    thing=""
+    for i in range(len(commands)):
+        if commands[i][-1]=="\\":
+            if i==len(commands)-1:
+                thing+=commands[i][:-1]+" "
+                things.append(thing)
+                thing=""
+            else:
+                thing+=commands[i][:-1]+" "
+        else:
+            thing+=commands[i]
+            things.append(thing)
+            thing=""
     num=len(things)
+    if num==0:
+        continue
     if things[0]=="create":
         if num>=3:
             items=[]
