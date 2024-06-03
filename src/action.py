@@ -3,6 +3,8 @@ from src import file
 from src import system
 from pathlib import Path
 import os
+import glob
+import fnmatch
 
 def abspath(path):
     return str(Path(path).resolve())
@@ -21,6 +23,23 @@ def find(find):
             if str(i)==str(find):
                 return row[1]
     return None
+
+def wildcard(things,fs=False):
+    items=[]
+    for item in things:
+        if fs:
+            found=glob.glob(item)
+        else:
+            cur=db.all()
+            paths=[]
+            for row in cur:
+                paths.append(relpath(row[1]))
+            found=fnmatch.filter(paths,item)
+        if len(found)==0:
+            items.append(item)
+        items.extend(found)
+    items=list(set(items))
+    return items
 
 def findpath(option,item,v=True):
     if option=="-i":
