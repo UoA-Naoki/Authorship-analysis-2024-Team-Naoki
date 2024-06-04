@@ -9,8 +9,8 @@ Variables                               [id] [file] [id1] [id2] [idtype] [file1]
 
 create [idtype] [file1] [file2] ...     Create [file1], [file2] ... in DB with name [idtype] + number.
 retrieve                                Show all id and file.
-retrieve -i [id]                        Read text which named [id].
-retrieve -p [file]                      Read text in [file].
+retrieve -i [id1] [id2] ...             Read text which named [id1], [id2], ....
+retrieve -p [file1] [file2] ...         Read text in [file1], [file2], ....
 update -i [id1] [id2]                   Update [id1] with [id2].
 update -p [file] [id]                   Update id of [file] with [id].
 delete -i [id1] [id2] ...               Delete file named [id1], [id2], ....

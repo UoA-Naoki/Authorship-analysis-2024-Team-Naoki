@@ -105,11 +105,12 @@ def showall():
         print("id: "+row[0]+"\t\tpath: "+relpath(row[1]))
     return
 
-def retrieve(option,item):
-    path=findpath(option,item)
-    if path==None or path==0:
-        return
-    print(file.read(path))
+def retrieve(option,items):
+    for item in items:
+        path=findpath(option,item)
+        if path==None or path==0:
+            return
+        print(file.read(path))
     return
 
 def update(option,item,id):

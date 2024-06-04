@@ -40,8 +40,15 @@ while True:
     elif things[0]=="retrieve":
         if num==1:
             action.showall()
-        elif num==3:
-            action.retrieve(things[1],things[2])
+        elif num>=3:
+            if things[1]=="-i":
+                items=things[2:]
+            elif things[1]=="-p":
+                items=action.wildcard(things[2:])
+            else:
+                print("No such action. Input help for command list.")
+                continue
+            action.retrieve(things[1],items)
         else:
             print("No such action. Input help for command list.")
     elif things[0]=="update":
