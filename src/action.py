@@ -39,7 +39,13 @@ def wildcard(things,fs=False):
             items.append(item)
         items.extend(found)
     items=list(set(items))
-    return items
+    returnitems=[]
+    for item in items:
+        if system.casesensitive:
+            returnitems.append(item)
+        else:
+            returnitems.append(item.lower())
+    return returnitems
 
 def findpath(option,item,v=True):
     if option=="-i":

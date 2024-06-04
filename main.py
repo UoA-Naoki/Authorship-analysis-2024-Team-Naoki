@@ -53,7 +53,17 @@ while True:
             print("No such action. Input help for command list.")
     elif things[0]=="update":
         if num==4:
-            action.update(things[1],things[2],things[3])
+            if things[1]=="-i":
+                item=[things[2]]
+            elif things[1]=="-p":
+                item=action.wildcard([things[2]])
+                if len(item)>1:
+                    print("You cannot update multiple files at once.")
+                    continue
+            else:
+                print("No such action. Input help for command list.")
+                continue
+            action.update(things[1],item[0],things[3])
         else:
             print("No such action. Input help for command list.")
     elif things[0]=="delete":
