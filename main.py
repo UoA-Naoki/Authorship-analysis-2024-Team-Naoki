@@ -1,5 +1,6 @@
 from src import system
 from src import action
+import unicodedata
 
 system.init()
 while True:
@@ -9,6 +10,7 @@ while True:
     except EOFError:
         print()
         system.close()
+    command=unicodedata.normalize("NFKC",command)
     system.fileexistance()
     if system.casesensitive:
         commands=command.split()
@@ -33,8 +35,12 @@ while True:
         continue
     if things[0]=="create":
         if num>=3:
-            items=action.wildcard(things[2:],True)
-            action.create(things[1],items)
+            things[1]=things[1].upper()
+            if things[1]!="Q" and things[1]!="K" and things[1]!="R":
+                print("No such action. Input help for command list.")
+            else:
+                items=action.wildcard(things[2:],True)
+                action.create(things[1],items)
         else:
             print("No such action. Input help for command list.")
     elif things[0]=="retrieve":
@@ -53,17 +59,21 @@ while True:
             print("No such action. Input help for command list.")
     elif things[0]=="update":
         if num==4:
-            if things[1]=="-i":
-                item=[things[2]]
-            elif things[1]=="-p":
-                item=action.wildcard([things[2]])
-                if len(item)>1:
-                    print("You cannot update multiple files at once.")
-                    continue
-            else:
+            things[3]=things[3].upper()
+            if (things[3][0]!="Q" and things[3][0]!="K" and things[3][0]!="R") or not things[3][1:].isdecimal():
                 print("No such action. Input help for command list.")
-                continue
-            action.update(things[1],item[0],things[3])
+            else:
+                if things[1]=="-i":
+                    item=[things[2]]
+                elif things[1]=="-p":
+                    item=action.wildcard([things[2]])
+                    if len(item)>1:
+                        print("You cannot update multiple files at once.")
+                        continue
+                else:
+                    print("No such action. Input help for command list.")
+                    continue
+                action.update(things[1],item[0],things[3])
         else:
             print("No such action. Input help for command list.")
     elif things[0]=="delete":

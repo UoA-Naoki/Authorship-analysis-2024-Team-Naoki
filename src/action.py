@@ -124,6 +124,7 @@ def update(option,item,id):
     if path==None or path==0:
         return
     id=str(id).upper()
+    id=id[0]+str(int(id[1:]))
     row=find(id)
     if path==row:
         print("Nothing changed.")

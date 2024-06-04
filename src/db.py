@@ -13,7 +13,7 @@ def close():
     return
 
 def all():
-    cur.execute('SELECT * FROM files ORDER BY id ASC')
+    cur.execute('SELECT * FROM files ORDER BY LENGTH(id),id ASC')
     return cur
 
 def create(id,path):

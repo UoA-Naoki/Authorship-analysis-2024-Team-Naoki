@@ -3,7 +3,7 @@
 Options                                 -i -p
 Variables                               [id] [file] [id1] [id2] [idtype] [file1] [file2]
 [id] [id1] [id2]                        Put id such as Q1, Q2, K1, K2, R1, R2, ....
-[idtype]                                Put id type such as Q, K, R.
+[idtype]                                Put id type such as Q, K or R.
 [file] [file1] [file2]                  Put file name or path.
 --------------------------------------------------------------------------------------------------------
 
