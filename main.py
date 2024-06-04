@@ -1,6 +1,5 @@
 from src import system
 from src import action
-from src import file
 
 system.init()
 while True:
@@ -8,8 +7,9 @@ while True:
     try:
         command=input("Action?> ")
     except EOFError:
+        print()
         system.close()
-    file.existancecheck()
+    system.fileexistance()
     if system.casesensitive:
         commands=command.split()
     else:

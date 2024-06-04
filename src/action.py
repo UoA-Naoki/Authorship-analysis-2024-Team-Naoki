@@ -65,7 +65,7 @@ def findid(id):
 def overwrite(id,path):
     while True:
         try:
-            overwrite=input(id+" is already exists. Do you want to overwrite? [y or n]> ")
+            overwrite=input(id+" is already exists. Do you want to overwrite (Y/n)?> ")
         except EOFError:
             print("Action canceled.")
             system.close()
