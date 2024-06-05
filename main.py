@@ -36,8 +36,10 @@ while True:
     if things[0]=="create":
         if num>=3:
             things[1]=things[1].upper()
-            if things[1]!="Q" and things[1]!="K" and things[1]!="R":
-                print("No such action. Input help for command list.")
+            if things[1][0]!="Q" and things[1][0]!="K" and things[1][0]!="R":
+                print("No such action. Input help for command list.")                
+            elif len(things[1])>1 and not things[1][1:].isdecimal():
+                print("No such action. Input help for command list.")                
             else:
                 items=action.wildcard(things[2:],True)
                 action.create(things[1],items)

@@ -71,7 +71,7 @@ def findid(id):
 def overwrite(id,path):
     while True:
         try:
-            overwrite=input(id+" is already exists. Do you want to overwrite (Y/n)?> ")
+            overwrite=input(id+" is already exist. Do you want to overwrite (Y/n)?> ")
         except EOFError:
             print("Action canceled.")
             system.close()
@@ -85,7 +85,7 @@ def overwrite(id,path):
 def creatable(item):
     path=findpath("-p",item,False)
     if path!=None:
-        print(relpath(path)+" is already exists.")
+        print(relpath(path)+" is already exist.")
         return None
     if not os.path.exists(item):
         print("Not found: "+relpath(item))
@@ -93,16 +93,29 @@ def creatable(item):
     return abspath(item)
 
 def create(idtype,items):
+    selected=False
     idtype=str(idtype).upper()
-    idnum=1
+    if len(idtype)>1:
+        idnum=int(idtype[1:])
+        idtype=idtype[0]
+        selected=True
+    else:
+        idnum=1
     id=idtype+str(idnum)
+    i=0
     for item in items:
+        i+=1
+        j=0
         while findid(id):
+            j+=1
+            if i==1 and j==1 and selected:
+                print(id+" is already exist.")
             idnum+=1
             id=idtype+str(idnum)
         path=creatable(item)
         if path!=None:
             db.create(id,path)
+            print(relpath(path)+" is created as \""+id+"\".")
     return
 
 def showall():
@@ -132,6 +145,7 @@ def update(option,item,id):
     if row!=None:
         overwrite(id,row)
     db.update(id,path)
+    print("Update complete.")
     return
 
 def delete(option,items):
@@ -140,6 +154,7 @@ def delete(option,items):
         if path==None or path==0:
             continue
         db.delete(path)
+        print(item+" is deleted.")
     return
 
 def help():
