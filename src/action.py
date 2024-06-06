@@ -5,6 +5,8 @@ from pathlib import Path
 import os
 import glob
 import fnmatch
+import shutil
+import unicodedata
 
 def abspath(path):
     return str(Path(path).resolve())
@@ -124,13 +126,17 @@ def showall():
         print("id: "+row[0]+"\t\tpath: "+relpath(row[1]))
     return
 
-def retrieve(option,items):
+def retrieve(option,items,show=False):
+    wholetext=""
     for item in items:
         path=findpath(option,item)
         if path==None or path==0:
-            return
-        print(file.read(path))
-    return
+            return None
+        text=file.read(path)
+        wholetext+=text
+        if show:
+            print(text)
+    return wholetext
 
 def update(option,item,id):
     path=findpath(option,item)
@@ -155,6 +161,49 @@ def delete(option,items):
             continue
         db.delete(path)
     print("Delete complete.")
+    return
+
+def wordtoken(option,items,token):
+    text=retrieve(option,items)
+    if text==None:
+        return
+    token=" "+token.lower()+" "
+    long=len(token)
+    characters=50
+    lowertext=text.lower()
+    start=0
+    width=shutil.get_terminal_size().columns
+    while True:
+        start=lowertext.find(token,start+1)
+        if start==-1:
+            break
+        aftersurround="".join(c for c in text[start:start+long+characters] if c.isprintable())
+        aftersurroundlist=aftersurround.split()[:-1]
+        if len(aftersurroundlist)>=12:
+            aftersurroundlist=aftersurroundlist[:11]
+        while True:
+            aftersurroundword=""
+            for word in aftersurroundlist:
+                aftersurroundword+=word+" "
+            if len(aftersurroundword)<width/2:
+                break
+            else:
+                aftersurroundlist=aftersurroundlist[:-1]
+        beforesurround="".join(c for c in text[start-characters:start] if c.isprintable())
+        beforesurroundlist=beforesurround.split()[1:]
+        if len(beforesurroundlist)>=10:
+            beforesurroundlist=beforesurroundlist[-10:]
+        while True:
+            beforesurroundword=""
+            for word in beforesurroundlist:
+                beforesurroundword+=word+" "
+            if len(beforesurroundword)<width/2:
+                break
+            else:
+                beforesurroundlist=beforesurroundlist[1:]
+        for i in range(int(width/2)-len(beforesurroundword)):
+            beforesurroundword=" "+beforesurroundword
+        print(beforesurroundword+aftersurroundword)
     return
 
 def help():
