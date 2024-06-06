@@ -169,7 +169,9 @@ def wordtoken(option,items,token):
         return
     token=" "+token.lower()+" "
     long=len(token)
-    characters=50
+    tokenlist=token.split()
+    tokenlistlong=len(tokenlist)
+    characters=200
     lowertext=text.lower()
     start=0
     width=shutil.get_terminal_size().columns
@@ -178,14 +180,15 @@ def wordtoken(option,items,token):
         if start==-1:
             break
         aftersurround="".join(c for c in text[start:start+long+characters] if c.isprintable())
-        aftersurroundlist=aftersurround.split()[:-1]
-        if len(aftersurroundlist)>=12:
-            aftersurroundlist=aftersurroundlist[:11]
+        aftersurroundlist=aftersurround.split()[tokenlistlong:-1]
+        if len(aftersurroundlist)>10:
+            aftersurroundlist=aftersurroundlist[:10]
         while True:
             aftersurroundword=""
             for word in aftersurroundlist:
                 aftersurroundword+=word+" "
-            if len(aftersurroundword)<width/2:
+            if len(aftersurroundword)<int(width/2-long/2):
+                aftersurroundword=aftersurroundword[:-1]
                 break
             else:
                 aftersurroundlist=aftersurroundlist[:-1]
@@ -197,13 +200,14 @@ def wordtoken(option,items,token):
             beforesurroundword=""
             for word in beforesurroundlist:
                 beforesurroundword+=word+" "
-            if len(beforesurroundword)<width/2:
+            if len(beforesurroundword)<int(width/2-long/2):
+                beforesurroundword=beforesurroundword[:-1]
                 break
             else:
                 beforesurroundlist=beforesurroundlist[1:]
-        for i in range(int(width/2)-len(beforesurroundword)):
+        for i in range(int(width/2)-len(beforesurroundword)-int(long/2)):
             beforesurroundword=" "+beforesurroundword
-        print(beforesurroundword+aftersurroundword)
+        print(beforesurroundword+token+aftersurroundword)
     return
 
 def help():
