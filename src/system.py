@@ -23,6 +23,19 @@ def fileexistance():
             print(str(Path(item[1]).relative_to(Path.cwd()))+" is deleted.")
     return
 
+def dbexistance():
+    try:
+        db.create("XXX","XXX")
+    except db.NotCreatedError:
+        print("!")
+        cur=db.all()
+        changed=db.init()
+        for item in cur:
+            db.create(item[0],item[1])
+    else:
+        db.delete("XXX")
+    return
+
 pip="pip"
 def chardetinstall():
     try:

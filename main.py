@@ -10,8 +10,9 @@ while True:
     except EOFError:
         print()
         system.close()
-    command=unicodedata.normalize("NFKC",command)
+    system.dbexistance()
     system.fileexistance()
+    command=unicodedata.normalize("NFKC",command)
     if system.casesensitive:
         commands=command.split()
     else:
