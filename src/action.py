@@ -154,7 +154,7 @@ def delete(option,items):
         if path==None or path==0:
             continue
         db.delete(path)
-        print(item+" is deleted.")
+    print("Delete complete.")
     return
 
 def help():

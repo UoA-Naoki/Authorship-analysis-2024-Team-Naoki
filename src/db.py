@@ -1,55 +1,63 @@
 import sqlite3
-from pathlib import Path
+import glob
+import re
 
 class NotCreatedError(sqlite3.Error):
     def __init__(self):
         super().__init__()
 
+class NotTableRestoredError(sqlite3.Error):
+    def __init__(self):
+        super().__init__()
+
 conn=None
 cur=None
-dbname=None
+dbnum=None
 
 def init():
     global conn
     global cur
-    global dbname
-    if cur==None:
-        dbname=".files.db"
-        dbfound=False
-        i=0
-        while i<100000:
-            db=list(Path("./").glob(dbname))
-            if len(db)==0:
-                i+=1
-                dbname=".files"+str(i)+".db"
-                continue
-            else:
-                db=str(db[0])
-            conn=sqlite3.connect(db)
-            cur=conn.cursor()
-            try:
-                cur.execute('CREATE TABLE IF NOT EXISTS files(id STRING,path STRING)')
-            except sqlite3.Error:
-                i+=1
-                dbname=".files"+str(i)+".db"
-            else:
-                dbfound=True
-                break
-        if not dbfound:
-            dbname=".files.db"
-    i=0
-    changed=False
-    while True:
+    global dbnum
+    dbcandlist=glob.glob(".files*.db")
+    dbcandpatt=re.compile("\.files\d+\.db")
+    dbcands=[]
+    for dbcand in dbcandlist:
+        if dbcandpatt.fullmatch(dbcand)!=None:
+            dbcands.append(dbcandpatt.match(dbcand).group())
+    found=False
+    for dbcand in dbcands:
+        conn=sqlite3.connect(dbcand)
+        cur=conn.cursor()
+        try:
+            cur.execute('CREATE TABLE IF NOT EXISTS files(id STRING,path STRING)')
+        except sqlite3.Error:
+            continue
+        else:
+            found=True
+            break
+    dbnum=0
+    while not found:
+        dbname=".files"+str(dbnum)+".db"
         conn=sqlite3.connect(dbname)
         cur=conn.cursor()
         try:
             cur.execute('CREATE TABLE IF NOT EXISTS files(id STRING,path STRING)')
-            break
         except sqlite3.Error:
-            i+=1
-            dbname=".files"+str(i)+".db"
-            changed=True
-    return changed
+            dbnum+=1
+        else:
+            found=True
+    return
+
+def restore(dbname):
+    global conn
+    global cur
+    conn=sqlite3.connect(dbname)
+    cur=conn.cursor()
+    try:
+        cur.execute('CREATE TABLE IF NOT EXISTS files(id STRING,path STRING)')
+    except sqlite3.Error:
+        raise NotTableRestoredError
+    return
 
 def close():
     cur.close()
@@ -75,5 +83,10 @@ def update(id,path):
 
 def delete(path):
     cur.execute('DELETE FROM files WHERE path=?',(str(path),))
+    conn.commit()
+    return
+
+def deleteall():
+    cur.execute('DELETE FROM files')
     conn.commit()
     return

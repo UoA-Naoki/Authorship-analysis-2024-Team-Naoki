@@ -23,15 +23,23 @@ def fileexistance():
             print(str(Path(item[1]).relative_to(Path.cwd()))+" is deleted.")
     return
 
+def tryrestoredb(dbnum):
+    try:
+        db.restore(".files"+str(dbnum)+".db")
+    except db.NotTableRestoredError:
+        tryrestoredb(dbnum+1)
+    return
+
 def dbexistance():
     try:
         db.create("XXX","XXX")
     except db.NotCreatedError:
-        print("!")
-        cur=db.all()
-        changed=db.init()
-        for item in cur:
+        oldcur=db.all()
+        tryrestoredb(0)
+        db.deleteall()
+        for item in oldcur:
             db.create(item[0],item[1])
+        print("DB has been restored.")
     else:
         db.delete("XXX")
     return
