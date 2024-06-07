@@ -6,7 +6,7 @@ import os
 import glob
 import fnmatch
 import shutil
-import unicodedata
+import datetime
 
 def abspath(path):
     return str(Path(path).resolve())
@@ -40,7 +40,7 @@ def wildcard(things,fs=False):
         if len(found)==0:
             items.append(item)
         items.extend(found)
-    items=list(set(items))
+    items=sorted(list(set(items)))
     returnitems=[]
     for item in items:
         if system.casesensitive:
@@ -175,6 +175,7 @@ def wordtoken(option,items,token):
     lowertext=text.lower()
     start=0
     width=shutil.get_terminal_size().columns
+    result=""
     while True:
         start=lowertext.find(token,start+1)
         if start==-1:
@@ -207,7 +208,27 @@ def wordtoken(option,items,token):
                 beforesurroundlist=beforesurroundlist[1:]
         for i in range(int(width/2)-len(beforesurroundword)-int(long/2)):
             beforesurroundword=" "+beforesurroundword
-        print(beforesurroundword+token+aftersurroundword)
+        resultline=beforesurroundword+token+aftersurroundword
+        print(resultline)
+        result+=resultline+"\n"
+    if system.casenum==None:
+        system.casenum=1
+    else:
+        system.casenum+=1
+    casestr=str(system.casenum).zfill(6)
+    now=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
+    y=str(now.year)
+    mo=str(now.month).zfill(2)
+    d=str(now.day).zfill(2)
+    h=str(now.hour).zfill(2)
+    mi=str(now.minute).zfill(2)
+    s=str(now.second).zfill(2)
+    micro=str(now.microsecond).zfill(6)
+    path="./results/"+casestr+"-"+y+mo+d+"-"+h+mi+s+"-"+micro+"-"
+    for part in tokenlist:
+        path+=part+" "
+    path=path[:-1]+".txt"
+    file.write(path,result)
     return
 
 def help():

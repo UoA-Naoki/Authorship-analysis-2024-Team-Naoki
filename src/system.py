@@ -5,6 +5,8 @@ import signal
 import subprocess
 import os
 from pathlib import Path
+import glob
+import re
 
 def close():
     print()
@@ -46,6 +48,7 @@ def dbexistance():
 
 pip="pip"
 def chardetinstall():
+    global pip
     try:
         subprocess.run(pip+" list|grep chardet",shell=True,capture_output=True,text=True,check=True)
     except subprocess.CalledProcessError:
@@ -71,10 +74,25 @@ def chardetinstall():
             close()
     return
 
+casenum=None
+def casenuminit():
+    resultscand=glob.glob("./results/*.txt")
+    resultpatt=re.compile("\./results/\d{6}-\d{8}-\d{6}-\d{6}-.*?\.txt")
+    results=[]
+    for result in resultscand:
+        if resultpatt.fullmatch(result)!=None:
+            results.append(resultpatt.fullmatch(result).group())
+    results=sorted(results)
+    if len(results)!=0:
+        return int(results[-1][10:16])
+    else:
+        return None
+
 casesensitive=False
 def init():
     global casesensitive
     global pip
+    global casenum
     p=platform.system()
     if p=="Linux":
         casesensitive=True
@@ -94,4 +112,5 @@ def init():
     db.init()
     signal.signal(signal.SIGINT,handler)
     chardetinstall()
+    casenum=casenuminit()
     return
