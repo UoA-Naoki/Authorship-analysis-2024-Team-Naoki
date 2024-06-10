@@ -101,7 +101,7 @@ while True:
                 print("Not implemented yet.")
             elif things[1]=="pos":
                 print("Not implemented yet.")
-            elif things[1][:-4]=="gram":
+            elif things[1][-4:]=="gram":
                 print("Not implemented yet.")
             elif things[1]=="regex":
                 print("Not implemented yet.")
