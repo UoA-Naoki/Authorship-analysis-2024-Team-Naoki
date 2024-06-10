@@ -1,27 +1,33 @@
 
 --------------------------------------------------------------------------------------------------------
-Options                                         -i -p
-Variables                                       [id] [file] [id1] [id2] [idtype] [idnum] [file1] [file2]
-[id] [id1] [id2]                                Put id such as Q1, Q2, K1, K2, R1, R2, ....
-[idtype]                                        Put id type such as Q, K or R.
-[idnum]                                         Put integer for id number.
-[file] [file1] [file2]                          Put file name or path.
+Options                                             -i -p
+Variables                                           [id] [file] [id1] [id2] [idtype] [idnum] [file1]
+                                                    [file2] [token]
+[id] [id1] [id2]                                    Put id such as Q1, Q2, K1, K2, R1, R2, ....
+[idtype]                                            Put id type such as Q, K or R.
+[idnum]                                             Put integer for id number.
+[file] [file1] [file2]                              Put file name or path.
+[token]                                             Put token that you want to search.
 --------------------------------------------------------------------------------------------------------
 
-create [idtype] [file]                          Create [file] in DB with name [idtype] + number.
-create [idtype] [file1] [file2] ...             Create multiple files.
-create [idtype][idnum] [file]                   Create [file] in DB with name [idtype] + [idnum].
-create [idtype][idnum] [file1] [file2] ...      Create multiple files.
-retrieve                                        Show all id and file.
-retrieve -i [id]                                Read text which named [id].
-retrieve -i [id1] [id2] ...                     Read multiple files.
-retrieve -p [file]                              Read text in [file].
-retrieve -p [file1] [file2] ...                 Read multiple files.
-update -i [id1] [id2]                           Update [id1] with [id2].
-update -p [file] [id]                           Update id of [file] with [id].
-delete -i [id]                                  Delete file named [id].
-delete -i [id1] [id2] ...                       Delete multiple files.
-delete -p [file]                                Delete [file].
-delete -p [file1] [file2] ...                   Delete multiple files.
-quit                                            Quit.
-help                                            Show help.
+create [idtype] [file]                              Create [file] in DB with name [idtype] + number.
+create [idtype] [file1] [file2] ...                 Create multiple files.
+create [idtype][idnum] [file]                       Create [file] in DB with name [idtype] + [idnum].
+create [idtype][idnum] [file1] [file2] ...          Create multiple files.
+retrieve                                            Show all id and file.
+retrieve -i [id]                                    Read text which named [id].
+retrieve -i [id1] [id2] ...                         Read multiple files.
+retrieve -p [file]                                  Read text in [file].
+retrieve -p [file1] [file2] ...                     Read multiple files.
+update -i [id1] [id2]                               Update [id1] with [id2].
+update -p [file] [id]                               Update id of [file] with [id].
+delete -i [id]                                      Delete file named [id].
+delete -i [id1] [id2] ...                           Delete multiple files.
+delete -p [file]                                    Delete [file].
+delete -p [file1] [file2] ...                       Delete multiple files.
+search word token [token] -i [id]                   Search by [token] from file named [id].
+search word token [token] -i [id1] [id2] ...        Search by [token] from multiple files.
+search word token [token] -p [file]                 Search by [token] from [file].
+search word token [token] -p [file1] [file2] ...    Search by [token] from multiple files.
+quit                                                Quit.
+help                                                Show help.
