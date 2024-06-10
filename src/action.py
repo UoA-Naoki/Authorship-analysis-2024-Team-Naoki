@@ -163,6 +163,13 @@ def delete(option,items):
     print("Delete complete.")
     return
 
+RED='\033[31m'#red
+GREEN='\033[32m'#green
+YELLOW='\033[33m'#yerrow
+BLUE='\033[34m'#blue
+RESET='\033[0m'#reset
+
+
 def wordtoken(option,items,token):
     text=retrieve(option,items)
     if text==None:
@@ -184,6 +191,12 @@ def wordtoken(option,items,token):
         aftersurroundlist=aftersurround.split()[tokenlistlong:-1]
         if len(aftersurroundlist)>10:
             aftersurroundlist=aftersurroundlist[:10]
+        if len(aftersurroundlist)>0:
+            aftersurroundlist[0]=BLUE+aftersurroundlist[0]+RESET
+        if len(aftersurroundlist)>1:
+            aftersurroundlist[1]=GREEN+aftersurroundlist[1]+RESET
+        if len(aftersurroundlist)>2:
+            aftersurroundlist[2]=RED+aftersurroundlist[2]+RESET
         while True:
             aftersurroundword=""
             for word in aftersurroundlist:
@@ -208,7 +221,7 @@ def wordtoken(option,items,token):
                 beforesurroundlist=beforesurroundlist[1:]
         for i in range(int(width/2)-len(beforesurroundword)-int(long/2)):
             beforesurroundword=" "+beforesurroundword
-        resultline=beforesurroundword+token+aftersurroundword
+        resultline=beforesurroundword+YELLOW+token+RESET+aftersurroundword
         print(resultline)
         result+=resultline+"\n"
     if system.casenum==None:
