@@ -1,5 +1,6 @@
 import importlib
 from src import system
+import os
 
 def CESdetect(path):
     system.chardetinstall()
@@ -32,3 +33,10 @@ def read(path):
     text=f.read()
     f.close()
     return text
+
+def write(path,data):
+    os.makedirs(os.path.dirname(path),exist_ok=True)
+    f=open(path,'w')
+    f.write(data)
+    f.close()
+    return

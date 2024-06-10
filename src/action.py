@@ -5,6 +5,8 @@ from pathlib import Path
 import os
 import glob
 import fnmatch
+import shutil
+import datetime
 
 def abspath(path):
     return str(Path(path).resolve())
@@ -38,7 +40,7 @@ def wildcard(things,fs=False):
         if len(found)==0:
             items.append(item)
         items.extend(found)
-    items=list(set(items))
+    items=sorted(list(set(items)))
     returnitems=[]
     for item in items:
         if system.casesensitive:
@@ -124,13 +126,17 @@ def showall():
         print("id: "+row[0]+"\t\tpath: "+relpath(row[1]))
     return
 
-def retrieve(option,items):
+def retrieve(option,items,show=False):
+    wholetext=""
     for item in items:
         path=findpath(option,item)
         if path==None or path==0:
-            return
-        print(file.read(path))
-    return
+            return None
+        text=file.read(path)
+        wholetext+=text
+        if show:
+            print(text)
+    return wholetext
 
 def update(option,item,id):
     path=findpath(option,item)
@@ -155,6 +161,87 @@ def delete(option,items):
             continue
         db.delete(path)
     print("Delete complete.")
+    return
+
+RED='\033[31m'#red
+GREEN='\033[32m'#green
+YELLOW='\033[33m'#yerrow
+BLUE='\033[34m'#blue
+RESET='\033[0m'#reset
+
+
+def wordtoken(option,items,token):
+    text=retrieve(option,items)
+    if text==None:
+        return
+    token=" "+token.lower()+" "
+    long=len(token)
+    tokenlist=token.split()
+    tokenlistlong=len(tokenlist)
+    characters=200
+    lowertext=text.lower()
+    start=0
+    width=shutil.get_terminal_size().columns
+    result=""
+    while True:
+        start=lowertext.find(token,start+1)
+        if start==-1:
+            break
+        aftersurround="".join(c for c in text[start:start+long+characters] if c.isprintable())
+        aftersurroundlist=aftersurround.split()[tokenlistlong:-1]
+        if len(aftersurroundlist)>10:
+            aftersurroundlist=aftersurroundlist[:10]
+        if len(aftersurroundlist)>0:
+            aftersurroundlist[0]=BLUE+aftersurroundlist[0]+RESET
+        if len(aftersurroundlist)>1:
+            aftersurroundlist[1]=GREEN+aftersurroundlist[1]+RESET
+        if len(aftersurroundlist)>2:
+            aftersurroundlist[2]=RED+aftersurroundlist[2]+RESET
+        while True:
+            aftersurroundword=""
+            for word in aftersurroundlist:
+                aftersurroundword+=word+" "
+            if len(aftersurroundword)<int(width/2-long/2):
+                aftersurroundword=aftersurroundword[:-1]
+                break
+            else:
+                aftersurroundlist=aftersurroundlist[:-1]
+        beforesurround="".join(c for c in text[start-characters:start] if c.isprintable())
+        beforesurroundlist=beforesurround.split()[1:]
+        if len(beforesurroundlist)>=10:
+            beforesurroundlist=beforesurroundlist[-10:]
+        while True:
+            beforesurroundword=""
+            for word in beforesurroundlist:
+                beforesurroundword+=word+" "
+            if len(beforesurroundword)<int(width/2-long/2):
+                beforesurroundword=beforesurroundword[:-1]
+                break
+            else:
+                beforesurroundlist=beforesurroundlist[1:]
+        for i in range(int(width/2)-len(beforesurroundword)-int(long/2)):
+            beforesurroundword=" "+beforesurroundword
+        resultline=beforesurroundword+YELLOW+token+RESET+aftersurroundword
+        print(resultline)
+        result+=resultline+"\n"
+    if system.casenum==None:
+        system.casenum=1
+    else:
+        system.casenum+=1
+    casestr=str(system.casenum).zfill(6)
+    now=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
+    y=str(now.year)
+    mo=str(now.month).zfill(2)
+    d=str(now.day).zfill(2)
+    h=str(now.hour).zfill(2)
+    mi=str(now.minute).zfill(2)
+    s=str(now.second).zfill(2)
+    micro=str(now.microsecond).zfill(6)
+    path="./results/"+casestr+"-"+y+mo+d+"-"+h+mi+s+"-"+micro+"-"
+    for part in tokenlist:
+        path+=part+" "
+    path=path[:-1]+".txt"
+    file.write(path,result)
     return
 
 def help():

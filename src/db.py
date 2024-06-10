@@ -23,7 +23,7 @@ def init():
     dbcands=[]
     for dbcand in dbcandlist:
         if dbcandpatt.fullmatch(dbcand)!=None:
-            dbcands.append(dbcandpatt.match(dbcand).group())
+            dbcands.append(dbcandpatt.fullmatch(dbcand).group())
     found=False
     for dbcand in dbcands:
         conn=sqlite3.connect(dbcand)
