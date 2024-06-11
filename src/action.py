@@ -7,6 +7,7 @@ import glob
 import fnmatch
 import shutil
 import datetime
+import unicodedata
 
 def abspath(path):
     return str(Path(path).resolve())
@@ -163,12 +164,20 @@ def delete(option,items):
     print("Delete complete.")
     return
 
+def zenlen(text):
+    count=0
+    for c in text:
+        if unicodedata.east_asian_width(c) in "FW":
+            count+=2
+        else:
+            count+=1
+    return count
+
 RED='\033[31m'#red
 GREEN='\033[32m'#green
 YELLOW='\033[33m'#yerrow
 BLUE='\033[34m'#blue
 RESET='\033[0m'#reset
-
 
 def wordtoken(option,items,token):
     text=retrieve(option,items)
@@ -219,7 +228,7 @@ def wordtoken(option,items,token):
                 break
             else:
                 beforesurroundlist=beforesurroundlist[1:]
-        for i in range(int(width/2)-len(beforesurroundword)-int(long/2)):
+        for i in range(int(width/2)-zenlen(beforesurroundword)-int(long/2)):
             beforesurroundword=" "+beforesurroundword
         resultline=beforesurroundword+YELLOW+token+RESET+aftersurroundword
         print(resultline)
@@ -248,20 +257,20 @@ def hyphenation(texts):
     width=int(shutil.get_terminal_size().columns/len(texts))
     alllen=0
     for text in texts:
-        alllen+=len(text)
+        alllen+=zenlen(text)
     output=""
     while alllen:
         for i in range(len(texts)):
             space=""
-            if len(texts[i])>width-1:
+            if zenlen(texts[i])>width-1:
                 output+=texts[i][:width-2]+"- "
                 texts[i]=texts[i][width-2:]
                 alllen-=(width-2)
             else:
-                while len(texts[i])+len(space)<width:
+                while zenlen(texts[i])+len(space)<width:
                     space+=" "
                 output+=texts[i]+space
-                alllen-=len(texts[i])
+                alllen-=zenlen(texts[i])
                 texts[i]=""
         output+="\n"
     return output[:-1]
@@ -297,18 +306,19 @@ def compare(option,questioned,known):
     output=hyphenation([questioned,known])
     for i in range(max):
         output+=hyphenation([qdict[i][0],kdict[i][0]])
-        if i%20==19 and i!=max-1:
+        if i%20==19:
             print(output)
-            while True:
-                try:
-                    showmore=input("Just push enter to show 20 words more. Push q and enter to quit> ")
-                except EOFError:
-                    system.close()
-                else:
-                    if showmore=="q" or showmore=="Q":
-                        return
-                    elif showmore=="":
-                        break
+            if i!=max-1:
+                while True:
+                    try:
+                        showmore=input("Just push enter to show 20 words more. Push q and enter to quit> ")
+                    except EOFError:
+                        system.close()
+                    else:
+                        if showmore=="q" or showmore=="Q":
+                            return
+                        elif showmore=="":
+                            break
     return
 
 def help():
