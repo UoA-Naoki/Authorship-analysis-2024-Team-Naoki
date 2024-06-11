@@ -244,88 +244,61 @@ def wordtoken(option,items,token):
     file.write(path,result)
     return
 
+def hyphenation(texts):
+    width=int(shutil.get_terminal_size().columns/len(texts))
+    alllen=0
+    for text in texts:
+        alllen+=len(text)
+    output=""
+    while alllen:
+        for i in range(len(texts)):
+            space=""
+            if len(texts[i])>width-1:
+                output+=texts[i][:width-2]+"- "
+                texts[i]=texts[i][width-2:]
+                alllen-=(width-2)
+            else:
+                while len(texts[i])+len(space)<width:
+                    space+=" "
+                output+=texts[i]+space
+                alllen-=len(texts[i])
+                texts[i]=""
+        output+="\n"
+    return output[:-1]
+
 def compare(option,questioned,known):
-    width=shutil.get_terminal_size().columns
-    half=int(width/2)
     qtext=retrieve(option,questioned)
     ktext=retrieve(option,known)
     if qtext==None or ktext==None:
         return
     qtext="".join(c for c in qtext if c.isprintable())
     qtext=qtext.split()
-    ktext="".join(c for c in ktext if c.isprintable())
-    ktext=ktext.split()
     qdict={}
-    kdict={}
     for word in qtext:
         if word in qdict:
             qdict[word]+=1
         else:
             qdict[word]=1
+    qdict=sorted(qdict.items(),key=lambda x:x[1],reverse=True)
+    qmax=len(qdict)-len(qdict)%20
+    ktext="".join(c for c in ktext if c.isprintable())
+    ktext=ktext.split()
+    kdict={}
     for word in ktext:
         if word in kdict:
             kdict[word]+=1
         else:
             kdict[word]=1
-    qdict=sorted(qdict.items(),key=lambda x:x[1],reverse=True)
     kdict=sorted(kdict.items(),key=lambda x:x[1],reverse=True)
-    qmax=len(qdict)-len(qdict)%20
     kmax=len(kdict)-len(kdict)%20
     max=qmax if qmax<kmax else kmax
-    count=0
-    space=""
-    questioned=questioned[0] if option=="-i" else relpath(questioned[0])
-    known=known[0] if option=="-i" else relpath(known[0])
-    qlen=len(questioned)
-    klen=len(known)
-    if qlen>half:
-        if klen>half:
-            print(questioned[:half-2]+"- "+known[:half-1]+"-")
-            while len(questioned[half-2:])+len(space)<half:
-                space+=" "
-            print(questioned[half-2:]+space+known[half-1:])
-        else:
-            print(questioned[:half-2]+"- "+known)
-            print(questioned[half-2:])
-    elif klen>half:
-        while qlen+len(space)<half:
-            space+=" "
-        print(questioned+space+known[:half-1]+"-")
-        space=""
-        while len(space)<half:
-            space+=" "
-        print(space+known[half-1:])
-    else:
-        while qlen+len(space)<half:
-            space+=" "
-        print(questioned+space+known)
+    questioned=questioned[0].upper() if option=="-i" else relpath(questioned[0])
+    known=known[0].upper() if option=="-i" else relpath(known[0])
+    output=hyphenation([questioned,known])
     for i in range(max):
-        space=""
-        qlen=len(qdict[i][0])
-        klen=len(kdict[i][0])
-        if qlen>half:
-            if klen>half:
-                print(qdict[i][0][:half-2]+"- "+kdict[i][0][:half-1]+"-")
-                while len(qdict[i][0][half-2:])+len(space)<half:
-                    space+=" "
-                print(qdict[i][0][half-2:]+space+kdict[i][0][half-1:])
-            else:
-                print(qdict[i][0][:half-2]+"- "+kdict[i][0])
-                print(qdict[i][0][half-2:])
-        elif klen>half:
-            while qlen+len(space)<half:
-                space+=" "
-            print(qdict[i][0]+space+kdict[i][0][:half-1]+"-")
-            space=""
-            while len(space)<half:
-                space+=" "
-            print(space+kdict[i][0][half-1:])
-        else:
-            while qlen+len(space)<half:
-                space+=" "
-            print(qdict[i][0]+space+kdict[i][0])
-        count+=1
-        if count%20==0 and i+1!=max:
+        output+=hyphenation([qdict[i][0],kdict[i][0]])
+        if i%20==19 and i!=max-1:
+            print(output)
             while True:
                 try:
                     showmore=input("Just push enter to show 20 words more. Push q and enter to quit> ")
