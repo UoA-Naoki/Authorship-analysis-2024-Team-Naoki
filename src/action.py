@@ -244,5 +244,99 @@ def wordtoken(option,items,token):
     file.write(path,result)
     return
 
+def compare(option,questioned,known):
+    width=shutil.get_terminal_size().columns
+    half=int(width/2)
+    qtext=retrieve(option,questioned)
+    ktext=retrieve(option,known)
+    if qtext==None or ktext==None:
+        return
+    qtext="".join(c for c in qtext if c.isprintable())
+    qtext=qtext.split()
+    ktext="".join(c for c in ktext if c.isprintable())
+    ktext=ktext.split()
+    qdict={}
+    kdict={}
+    for word in qtext:
+        if word in qdict:
+            qdict[word]+=1
+        else:
+            qdict[word]=1
+    for word in ktext:
+        if word in kdict:
+            kdict[word]+=1
+        else:
+            kdict[word]=1
+    qdict=sorted(qdict.items(),key=lambda x:x[1],reverse=True)
+    kdict=sorted(kdict.items(),key=lambda x:x[1],reverse=True)
+    qmax=len(qdict)-len(qdict)%20
+    kmax=len(kdict)-len(kdict)%20
+    max=qmax if qmax<kmax else kmax
+    count=0
+    space=""
+    questioned=questioned[0] if option=="-i" else relpath(questioned[0])
+    known=known[0] if option=="-i" else relpath(known[0])
+    qlen=len(questioned)
+    klen=len(known)
+    if qlen>half:
+        if klen>half:
+            print(questioned[:half-2]+"- "+known[:half-1]+"-")
+            while len(questioned[half-2:])+len(space)<half:
+                space+=" "
+            print(questioned[half-2:]+space+known[half-1:])
+        else:
+            print(questioned[:half-2]+"- "+known)
+            print(questioned[half-2:])
+    elif klen>half:
+        while qlen+len(space)<half:
+            space+=" "
+        print(questioned+space+known[:half-1]+"-")
+        space=""
+        while len(space)<half:
+            space+=" "
+        print(space+known[half-1:])
+    else:
+        while qlen+len(space)<half:
+            space+=" "
+        print(questioned+space+known)
+    for i in range(max):
+        space=""
+        qlen=len(qdict[i][0])
+        klen=len(kdict[i][0])
+        if qlen>half:
+            if klen>half:
+                print(qdict[i][0][:half-2]+"- "+kdict[i][0][:half-1]+"-")
+                while len(qdict[i][0][half-2:])+len(space)<half:
+                    space+=" "
+                print(qdict[i][0][half-2:]+space+kdict[i][0][half-1:])
+            else:
+                print(qdict[i][0][:half-2]+"- "+kdict[i][0])
+                print(qdict[i][0][half-2:])
+        elif klen>half:
+            while qlen+len(space)<half:
+                space+=" "
+            print(qdict[i][0]+space+kdict[i][0][:half-1]+"-")
+            space=""
+            while len(space)<half:
+                space+=" "
+            print(space+kdict[i][0][half-1:])
+        else:
+            while qlen+len(space)<half:
+                space+=" "
+            print(qdict[i][0]+space+kdict[i][0])
+        count+=1
+        if count%20==0 and i+1!=max:
+            while True:
+                try:
+                    showmore=input("Just push enter to show 20 words more. Push q and enter to quit> ")
+                except EOFError:
+                    system.close()
+                else:
+                    if showmore=="q" or showmore=="Q":
+                        return
+                    elif showmore=="":
+                        break
+    return
+
 def help():
     print(file.read(".help.txt"))

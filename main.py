@@ -109,6 +109,20 @@ while True:
                 print("No such action. Input help for command list.")
         else:
             print("No such action. Input help for command list.")
+    elif things[0]=="compare" and num==4:
+        if things[1]=="-i":
+            question=[things[2]]
+            known=[things[3]]
+        elif things[1]=="-p":
+            question=action.wildcard([things[2]])
+            known=action.wildcard([things[3]])
+            if len(question)>1 or len(known)>1:
+                print("You cannot compare more than 2 files at once.")
+                continue
+        else:
+            print("No such action. Input help for command list.")
+            continue
+        action.compare(things[1],question,known)
     elif things[0]=="quit":
         break
     elif things[0]=="help":
