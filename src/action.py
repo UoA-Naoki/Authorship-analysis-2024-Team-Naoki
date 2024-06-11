@@ -7,6 +7,7 @@ import glob
 import fnmatch
 import shutil
 import datetime
+import unicodedata
 
 def abspath(path):
     return str(Path(path).resolve())
@@ -163,12 +164,20 @@ def delete(option,items):
     print("Delete complete.")
     return
 
+def zenlen(text):
+    count=0
+    for c in text:
+        if unicodedata.east_asian_width(c) in "FW":
+            count+=2
+        else:
+            count+=1
+    return count
+
 RED='\033[31m'#red
 GREEN='\033[32m'#green
 YELLOW='\033[33m'#yerrow
 BLUE='\033[34m'#blue
 RESET='\033[0m'#reset
-
 
 def wordtoken(option,items,token):
     text=retrieve(option,items)
@@ -219,7 +228,7 @@ def wordtoken(option,items,token):
                 break
             else:
                 beforesurroundlist=beforesurroundlist[1:]
-        for i in range(int(width/2)-len(beforesurroundword)-int(long/2)):
+        for i in range(int(width/2)-zenlen(beforesurroundword)-int(long/2)):
             beforesurroundword=" "+beforesurroundword
         resultline=beforesurroundword+YELLOW+token+RESET+aftersurroundword
         print(resultline)
@@ -242,6 +251,74 @@ def wordtoken(option,items,token):
         path+=part+" "
     path=path[:-1]+".txt"
     file.write(path,result)
+    return
+
+def hyphenation(texts):
+    width=int(shutil.get_terminal_size().columns/len(texts))
+    alllen=0
+    for text in texts:
+        alllen+=zenlen(text)
+    output=""
+    while alllen:
+        for i in range(len(texts)):
+            space=""
+            if zenlen(texts[i])>width-1:
+                output+=texts[i][:width-2]+"- "
+                texts[i]=texts[i][width-2:]
+                alllen-=(width-2)
+            else:
+                while zenlen(texts[i])+len(space)<width:
+                    space+=" "
+                output+=texts[i]+space
+                alllen-=zenlen(texts[i])
+                texts[i]=""
+        output+="\n"
+    return output[:-1]
+
+def compare(option,questioned,known):
+    qtext=retrieve(option,questioned)
+    ktext=retrieve(option,known)
+    if qtext==None or ktext==None:
+        return
+    qtext="".join(c for c in qtext if c.isprintable())
+    qtext=qtext.split()
+    qdict={}
+    for word in qtext:
+        if word in qdict:
+            qdict[word]+=1
+        else:
+            qdict[word]=1
+    qdict=sorted(qdict.items(),key=lambda x:x[1],reverse=True)
+    qmax=len(qdict)-len(qdict)%20
+    ktext="".join(c for c in ktext if c.isprintable())
+    ktext=ktext.split()
+    kdict={}
+    for word in ktext:
+        if word in kdict:
+            kdict[word]+=1
+        else:
+            kdict[word]=1
+    kdict=sorted(kdict.items(),key=lambda x:x[1],reverse=True)
+    kmax=len(kdict)-len(kdict)%20
+    max=qmax if qmax<kmax else kmax
+    questioned=questioned[0].upper() if option=="-i" else relpath(questioned[0])
+    known=known[0].upper() if option=="-i" else relpath(known[0])
+    output=hyphenation([questioned,known])
+    for i in range(max):
+        output+=hyphenation([qdict[i][0],kdict[i][0]])
+        if i%20==19:
+            print(output)
+            if i!=max-1:
+                while True:
+                    try:
+                        showmore=input("Just push enter to show 20 words more. Push q and enter to quit> ")
+                    except EOFError:
+                        system.close()
+                    else:
+                        if showmore=="q" or showmore=="Q":
+                            return
+                        elif showmore=="":
+                            break
     return
 
 def help():
