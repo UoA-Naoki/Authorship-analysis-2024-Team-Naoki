@@ -1,5 +1,5 @@
 
---------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------
 Options                                             -i -p
 Variables                                           [id] [file] [id1] [id2] [idtype] [idnum] [file1]
                                                     [file2] [token]
@@ -8,7 +8,7 @@ Variables                                           [id] [file] [id1] [id2] [idt
 [idnum]                                             Put integer for id number.
 [file] [file1] [file2]                              Put file name or path.
 [token]                                             Put token that you want to search.
---------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------
 
 create [idtype] [file]                              Create [file] in DB with name [idtype] + number.
 create [idtype] [file1] [file2] ...                 Create multiple files.
@@ -29,5 +29,7 @@ search word token [token] -i [id]                   Search by [token] from file 
 search word token [token] -i [id1] [id2] ...        Search by [token] from multiple files.
 search word token [token] -p [file]                 Search by [token] from [file].
 search word token [token] -p [file1] [file2] ...    Search by [token] from multiple files.
+compare -i [id1] [id2]                              Compare frequent words in file named [id1] and [id2].
+compare -p [file1] [file2]                          Compare frequent words in [file1] and [file2]
 quit                                                Quit.
 help                                                Show help.
